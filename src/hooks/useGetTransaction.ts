@@ -13,6 +13,7 @@ const useGetTransaction = (orderHash: string) => {
 			if (!data.state.data) return 30000; // keep polling until data arrives
 			if (data.state.data.status === "completed") return false; // stop polling when completed
 			if (data.state.data.status === "failed") return false; // stop polling when failed
+			if (data.state.data.status === "refunded") return false; // stop polling when failed
 
 			return 30000; // otherwise, poll every 30 seconds
 		},

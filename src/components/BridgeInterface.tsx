@@ -22,6 +22,7 @@ import { polygonAmoy } from "viem/chains";
 import useGetTransaction from "../hooks/useGetTransaction";
 import TxnHashLink from "./TxnHashLink";
 import { toast } from "react-toastify";
+import { isValidXrplAddress } from "../utils/addressValidation";
 
 export default function BridgeInterface() {
 	const { address, isConnected } = useAppKitAccount();
@@ -190,6 +191,12 @@ export default function BridgeInterface() {
 			console.error("Transaction failed", transactionData);
 			toast("Transaction Failed. Please try again.", { type: "error" });
 		}
+		if (transactionData.status === "refunded") {
+			setIsLoading(false);
+			toast("Transaction Failed. A refund has been initiated.", {
+				type: "error",
+			});
+		}
 	}, [transactionData]);
 	const handleBridge = async () => {
 		const userWallet = createWalletClient({
@@ -320,6 +327,15 @@ export default function BridgeInterface() {
 			});
 		}
 	}, [transactionData]);
+	const [valid, setValid] = useState(false);
+	useEffect(() => {
+		const isValid = isValidXrplAddress(recipientAddress);
+		if (isValid) {
+			setValid(true);
+		} else {
+			setValid(false);
+		}
+	}, [recipientAddress]);
 	return (
 		<div
 			className="w-full max-w-lg mx-auto p-6 rounded-2xl shadow-2xl glass-card"
@@ -461,7 +477,9 @@ export default function BridgeInterface() {
 							? approveAllowance
 							: handleBridge
 					}
-					disabled={!isConnected || !amount || !recipientAddress || isLoading}
+					disabled={
+						!isConnected || !amount || !recipientAddress || isLoading || !valid
+					}
 					className="w-full py-4 px-6 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
 					style={{
 						background: "linear-gradient(90deg, #10b981, #059669)",
