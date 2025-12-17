@@ -258,7 +258,7 @@ export default function BridgeInterface() {
 				const receipt = await publicWallet.waitForTransactionReceipt({
 					hash: txn,
 				});
-				console.log("Bridge receipt:", receipt);
+				console.log("Bridge receipt:", receipt.status);
 				if (receipt && receipt.status === "success") {
 					txnConfirmed = true;
 					setOrderHash(receipt.transactionHash);
@@ -266,6 +266,8 @@ export default function BridgeInterface() {
 						type: "info",
 						autoClose: 5000,
 					});
+				} else if (receipt.status !== "success") {
+					throw new Error("Transaction failed");
 				} else {
 					await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait 3 seconds before checking again
 				}
@@ -277,8 +279,6 @@ export default function BridgeInterface() {
 			console.error("Bridge error:", error);
 			toast("Bridge transaction failed. Please try again.", { type: "error" });
 			setIsLoading(false);
-		} finally {
-			setIsLoading(true);
 		}
 	};
 	useEffect(() => {
