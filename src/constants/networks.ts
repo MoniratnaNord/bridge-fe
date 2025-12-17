@@ -41,13 +41,13 @@ export const SUPPORTED_NETWORKS: Network[] = [
 		id: 80002,
 		name: "Polygon",
 		symbol: "",
-		icon: "⟠",
+		icon: "https://raw.githubusercontent.com/0xsquid/assets/main/images/webp128/chains/polygon.webp",
 		tokens: [
 			{
 				id: "usdc",
 				symbol: "USDC",
 				name: "USD Coin",
-				icon: "💵",
+				icon: "https://raw.githubusercontent.com/0xsquid/assets/main/images/migration/webp/42161_0xaf88d065e77c8cc2239327c5edb3a432268e5831.webp",
 				decimals: 6,
 				address: "0x41e94eb019c0762f9bfcf9fb1e58725bfb0e7582",
 			},
@@ -58,13 +58,13 @@ export const SUPPORTED_NETWORKS: Network[] = [
 		id: 1440000,
 		name: "XRPL",
 		symbol: "XRP",
-		icon: "🔷",
+		icon: "https://raw.githubusercontent.com/0xsquid/assets/main/images/webp128/chains/xrpl.webp",
 		tokens: [
 			{
 				id: "xrp",
 				symbol: "XRP",
 				name: "XRP",
-				icon: "⟠",
+				icon: "https://raw.githubusercontent.com/0xsquid/assets/main/images/migration/webp/xrpl-mainnet_xrp.webp",
 				decimals: 18,
 				address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 			},

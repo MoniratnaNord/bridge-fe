@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import { BrowserProvider, type Eip1193Provider } from "ethers";
-import { ArrowDownUp, Wallet, Check, Zap } from "lucide-react";
+import { ArrowDownUp, Wallet, Check } from "lucide-react";
 import { SUPPORTED_NETWORKS } from "../constants/networks";
 import { Network, Token } from "../types/bridge";
 import NetworkSelector from "./NetworkSelector";
@@ -10,7 +10,6 @@ import {
 	BRIDGE_ABI,
 	BRIDGE_CONTRACT_ADDRESS,
 	ERC20_ABI,
-	executeBridge,
 } from "../utils/bridge";
 import {
 	createPublicClient,
@@ -21,11 +20,12 @@ import {
 } from "viem";
 import { polygonAmoy } from "viem/chains";
 import useGetTransaction from "../hooks/useGetTransaction";
+import TxnHashLink from "./TxnHashLink";
+import { toast } from "react-toastify";
 
 export default function BridgeInterface() {
 	const { address, isConnected } = useAppKitAccount();
 	const { walletProvider } = useAppKitProvider("eip155");
-
 	const [sourceChain, setSourceChain] = useState<Network>(
 		SUPPORTED_NETWORKS[0]
 	);
@@ -34,25 +34,15 @@ export default function BridgeInterface() {
 	// 	abi: BRIDGE_ABI,
 	// 	functionName: "createOrder",
 	// });
-	const [sourceToken, setSourceToken] = useState<Token>({
-		id: "usdc",
-		symbol: "USDC",
-		name: "USD Coin",
-		icon: "💵",
-		decimals: 6,
-		address: "0x41e94eb019c0762f9bfcf9fb1e58725bfb0e7582",
-	});
+	const [sourceToken, setSourceToken] = useState<Token>(
+		SUPPORTED_NETWORKS[0].tokens[0]
+	);
 	const [destinationChain, setDestinationChain] = useState<Network>(
 		SUPPORTED_NETWORKS[1]
 	);
-	const [destinationToken, setDestinationToken] = useState<Token>({
-		id: "XRP",
-		symbol: "XRP",
-		name: "XRP",
-		icon: "🔷",
-		address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-		decimals: 18,
-	});
+	const [destinationToken, setDestinationToken] = useState<Token>(
+		SUPPORTED_NETWORKS[1].tokens[0]
+	);
 	const [amount, setAmount] = useState("");
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [balance, setBalance] = useState("0");
@@ -139,13 +129,16 @@ export default function BridgeInterface() {
 			account: address as `0x${string}`,
 		});
 		if (!isConnected || !walletProvider || !amount) {
-			alert("Please connect your wallet and enter an amount");
+			toast("Please connect your wallet and enter an amount", {
+				type: "warning",
+			});
 			return;
 		}
 		if (
 			BigInt(allowance as bigint) <
 			BigInt(Number(amount) * 10 ** sourceToken.decimals)
 		) {
+			setIsLoading(true);
 			const approveTxn = await userWallet.writeContract({
 				address: sourceToken.address as `0x${string}`,
 				abi: ERC20_ABI,
@@ -156,7 +149,10 @@ export default function BridgeInterface() {
 				],
 			});
 			console.log("Approve transaction:", approveTxn);
-			alert("Approval transaction sent. Please wait for confirmation.");
+			toast("Approval transaction sent. Please wait for confirmation.", {
+				type: "info",
+				autoClose: 5000,
+			});
 			// Wait for approval confirmation
 			let approvalConfirmed = false;
 			while (!approvalConfirmed) {
@@ -167,33 +163,34 @@ export default function BridgeInterface() {
 				if (receipt && receipt.status === "success") {
 					approvalConfirmed = true;
 					await checkAllowance();
+					setIsLoading(false);
 				} else {
 					await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait 3 seconds before checking again
 				}
 			}
 		}
 	};
-	const {
-		data: transactionData,
-		isLoading: isTransactionLoading,
-		refetch: refetchTransaction,
-	} = useGetTransaction(orderHash);
+	const { data: transactionData } = useGetTransaction(orderHash);
+	const [polygonHash, setPolygonHash] = useState<string>("");
+	const [xrpHash, setXrpHash] = useState<string>("");
+	useEffect(() => {
+		if (!transactionData) return;
 
-	const checkTxn = async () => {
-		let confirmed = false;
-		if (transactionData !== undefined) {
-			while (!confirmed) {
-				if (transactionData.transactionHash) {
-					alert("Polygon transaction successful!");
-				} else if (transactionData.status === "completed") {
-					confirmed = true;
-				} else {
-					await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait 3 seconds before checking again
-				}
-			}
+		if (transactionData.transactionHash) {
+			setPolygonHash(transactionData.transactionHash);
 		}
-		// Implementation for checking transaction status
-	};
+
+		if (transactionData.status === "completed") {
+			setXrpHash(transactionData.xrpTxHash);
+			setIsLoading(false);
+			toast("Transaction Completed Successfully!", { type: "success" });
+		}
+		if (transactionData.status === "failed") {
+			setIsLoading(false);
+			console.error("Transaction failed", transactionData);
+			toast("Transaction Failed. Please try again.", { type: "error" });
+		}
+	}, [transactionData]);
 	const handleBridge = async () => {
 		const userWallet = createWalletClient({
 			chain: polygonAmoy,
@@ -202,7 +199,10 @@ export default function BridgeInterface() {
 		});
 
 		if (!isConnected || !walletProvider || !amount || !recipientAddress) {
-			alert("Please fill in all fields and connect your wallet");
+			toast(
+				"Please connect your wallet, enter an amount, and recipient address",
+				{ type: "warning" }
+			);
 			return;
 		}
 
@@ -212,7 +212,7 @@ export default function BridgeInterface() {
 			const signer = await provider.getSigner();
 			const fromAddress = address;
 			const toAddress = recipientAddress;
-			const filler = "0x04aa78aa957bCf2d9151d5121634d4D146653FEe";
+			const filler = import.meta.env.VITE_FILLER_ADDRESS;
 			const fromToken = sourceToken.address;
 			const toToken = destinationToken.address;
 			const fromAmount = Number(amount) * 10 ** sourceToken.decimals;
@@ -222,7 +222,7 @@ export default function BridgeInterface() {
 			const fromChain = sourceChain.id;
 			const toChain = destinationChain.id;
 			const postHookHash =
-				"0x4ed9ba11c87060a6c6f2d0d75b22654cc2e14626522a3b7073249d3b8b8bf817";
+				"0x0000000000000000000000000000000000000000000000000000000000000000";
 			const expiry = Math.floor(Date.now() / 1000) + 4 * 60 * 60;
 			const order = {
 				fromAddress: fromAddress as `0x${string}`,
@@ -251,11 +251,14 @@ export default function BridgeInterface() {
 				const receipt = await publicWallet.waitForTransactionReceipt({
 					hash: txn,
 				});
-				console.log("Approval receipt:", receipt);
+				console.log("Bridge receipt:", receipt);
 				if (receipt && receipt.status === "success") {
 					txnConfirmed = true;
 					setOrderHash(receipt.transactionHash);
-					alert("Bridge transaction initiated successfully! Please ");
+					toast("Bridge transaction confirmed. Fetching status...", {
+						type: "info",
+						autoClose: 5000,
+					});
 				} else {
 					await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait 3 seconds before checking again
 				}
@@ -265,13 +268,58 @@ export default function BridgeInterface() {
 			fetchBalance();
 		} catch (error) {
 			console.error("Bridge error:", error);
-			alert("Bridge transaction failed. Please try again.");
+			toast("Bridge transaction failed. Please try again.", { type: "error" });
 			setIsLoading(false);
 		} finally {
 			setIsLoading(true);
 		}
 	};
+	useEffect(() => {
+		if (!transactionData) return;
 
+		if (transactionData.transactionHash) {
+			setPolygonHash(transactionData.transactionHash);
+
+			toast(
+				<div className="space-y-1">
+					<p className="text-sm text-slate-300">Polygon Transaction Hash:</p>
+					<TxnHashLink
+						hash={transactionData.transactionHash}
+						explorerUrl="https://amoy.polygonscan.com/tx"
+					/>
+				</div>,
+				{
+					toastId: `polygon-${transactionData.transactionHash}`, // ✅ prevents duplicates
+				}
+			);
+		}
+
+		if (transactionData.status === "completed") {
+			setXrpHash(transactionData.xrpTxHash);
+			setIsLoading(false);
+
+			toast(
+				<div className="space-y-1">
+					<p className="text-sm text-slate-300">XRP Transaction Hash:</p>
+					<TxnHashLink
+						hash={transactionData.xrpTxHash}
+						explorerUrl="https://testnet.xrpl.org/transactions"
+					/>
+				</div>,
+				{
+					toastId: `xrp-${transactionData.xrpTxHash}`, // ✅ prevents duplicates
+					closeButton: true,
+				}
+			);
+		}
+
+		if (transactionData.status === "failed") {
+			setIsLoading(false);
+			toast.error("Transaction Failed. Please try again.", {
+				toastId: "txn-failed",
+			});
+		}
+	}, [transactionData]);
 	return (
 		<div
 			className="w-full max-w-lg mx-auto p-6 rounded-2xl shadow-2xl glass-card"
@@ -452,6 +500,31 @@ export default function BridgeInterface() {
 					)}
 				</button>
 			</div>
+			{/* {polygonHash &&
+				toast(
+					<div className="space-y-1">
+						<p className="text-sm text-slate-300">Polygon Transaction Hash: </p>
+
+						<TxnHashLink
+							hash={polygonHash}
+							explorerUrl="https://amoy.polygonscan.com/tx"
+						/>
+					</div>
+				)}
+			{xrpHash &&
+				toast(
+					<div className="space-y-1">
+						<p className="text-sm text-slate-300">XRP Transaction Hash:</p>
+
+						<TxnHashLink
+							hash={xrpHash}
+							explorerUrl="https://testnet.xrpl.org/transactions"
+						/>
+					</div>,
+					{
+						closeButton: true,
+					}
+				)} */}
 
 			{!isConnected && (
 				<p className="mt-4 text-center text-sm text-slate-400">
