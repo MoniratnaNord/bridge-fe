@@ -23,6 +23,7 @@ import useGetTransaction from "../hooks/useGetTransaction";
 import TxnHashLink from "./TxnHashLink";
 import { toast } from "react-toastify";
 import { isValidXrplAddress } from "../utils/addressValidation";
+import { OrangeWalletButton } from "./WalletButton";
 
 export default function BridgeInterface() {
 	const { address, isConnected } = useAppKitAccount();
@@ -347,13 +348,11 @@ export default function BridgeInterface() {
 						<Zap className="w-5 h-5 text-emerald-400" />
 					</div> */}
 					<div>
-						<h1 className="text-2xl font-bold text-white">
-							Cross-Chain Bridge
-						</h1>
+						<h1 className="text-2xl font-bold text-white">BXNK protocol</h1>
 						<p className="text-xs text-slate-400">Fast • Secure • Low-cost</p>
 					</div>
 				</div>
-				<appkit-button balance="hide" />
+				<OrangeWalletButton />
 			</div>
 
 			{isConnected && (
@@ -480,10 +479,7 @@ export default function BridgeInterface() {
 					disabled={
 						!isConnected || !amount || !recipientAddress || isLoading || !valid
 					}
-					className="w-full py-4 px-6 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-					style={{
-						background: "linear-gradient(90deg, #10b981, #059669)",
-					}}
+					className="bg-orange-500 hover:bg-orange-600 w-full py-4 px-6 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
 				>
 					{isLoading ? (
 						<>
@@ -512,7 +508,7 @@ export default function BridgeInterface() {
 					  BigInt(Number(amount) * 10 ** sourceToken.decimals) ? (
 						"Approve"
 					) : isConnected ? (
-						"Bridge Assets"
+						"Execute protocol"
 					) : (
 						"Connect Wallet First"
 					)}

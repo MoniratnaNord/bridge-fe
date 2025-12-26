@@ -6,7 +6,7 @@ const queryClient = new QueryClient();
 function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
-			<div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+			<div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
 				<BridgeInterface />
 				<ToastContainer
 					position="bottom-right"
