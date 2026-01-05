@@ -24,6 +24,8 @@ import TxnHashLink from "./TxnHashLink";
 import { toast } from "react-toastify";
 import { isValidXrplAddress } from "../utils/addressValidation";
 import { OrangeWalletButton } from "./WalletButton";
+import { Client } from "xrpl";
+import TransferSuccessModal from "./TransferSuccessModal";
 
 export default function BridgeInterface() {
 	const { address, isConnected } = useAppKitAccount();
@@ -121,7 +123,10 @@ export default function BridgeInterface() {
 			functionName: "allowance",
 			args: [address as `0x${string}`, BRIDGE_CONTRACT_ADDRESS],
 		});
-		console.log("Allowance:", allowance);
+		console.log(
+			"checking Allowance:",
+			Number(BigInt(allowance as bigint)) / 10 ** sourceToken.decimals
+		);
 		setAllowance(allowance as bigint);
 	};
 	const approveAllowance = async () => {
@@ -137,7 +142,7 @@ export default function BridgeInterface() {
 			return;
 		}
 		if (
-			BigInt(allowance as bigint) <
+			BigInt(allowance as bigint) <=
 			BigInt(Number(amount) * 10 ** sourceToken.decimals)
 		) {
 			setIsLoading(true);
@@ -185,7 +190,7 @@ export default function BridgeInterface() {
 		if (transactionData.status === "completed") {
 			setXrpHash(transactionData.xrpTxHash);
 			setIsLoading(false);
-			toast("Transaction Completed Successfully!", { type: "success" });
+			// toast("Transaction Completed Successfully!", { type: "success" });
 		}
 		if (transactionData.status === "failed") {
 			setIsLoading(false);
@@ -282,6 +287,10 @@ export default function BridgeInterface() {
 			setIsLoading(false);
 		}
 	};
+	const [txnModal, setTxnModal] = useState(false);
+	const [fillAmt, setFillAmt] = useState(0);
+	const [fromAmt, setFromAmt] = useState(0);
+	const [toAdd, setToAdd] = useState("");
 	useEffect(() => {
 		if (!transactionData) return;
 
@@ -303,22 +312,31 @@ export default function BridgeInterface() {
 		}
 
 		if (transactionData.status === "completed") {
+			console.log("checking transaction data", transactionData);
+			setTxnModal(true);
 			setXrpHash(transactionData.xrpTxHash);
+			setFillAmt(
+				Number(transactionData.fillAmount) / 10 ** destinationToken.decimals
+			);
+			setFromAmt(
+				Number(transactionData.fromAmount) / 10 ** sourceToken.decimals
+			);
+			setToAdd(transactionData.toAddress);
 			setIsLoading(false);
 
-			toast(
-				<div className="space-y-1">
-					<p className="text-sm text-slate-300">XRP Transaction Hash:</p>
-					<TxnHashLink
-						hash={transactionData.xrpTxHash}
-						explorerUrl="https://testnet.xrpl.org/transactions"
-					/>
-				</div>,
-				{
-					toastId: `xrp-${transactionData.xrpTxHash}`, // ✅ prevents duplicates
-					closeButton: true,
-				}
-			);
+			// toast(
+			// 	<div className="space-y-1">
+			// 		<p className="text-sm text-slate-300">XRP Transaction Hash:</p>
+			// 		<TxnHashLink
+			// 			hash={transactionData.xrpTxHash}
+			// 			explorerUrl="https://testnet.xrpl.org/transactions"
+			// 		/>
+			// 	</div>,
+			// 	{
+			// 		toastId: `xrp-${transactionData.xrpTxHash}`, // ✅ prevents duplicates
+			// 		closeButton: true,
+			// 	}
+			// );
 		}
 
 		if (transactionData.status === "failed") {
@@ -329,14 +347,35 @@ export default function BridgeInterface() {
 		}
 	}, [transactionData]);
 	const [valid, setValid] = useState(false);
+	const [xrpBalance, setXrpBalance] = useState(0);
 	useEffect(() => {
 		const isValid = isValidXrplAddress(recipientAddress);
 		if (isValid) {
 			setValid(true);
+			const client = new Client("wss://s.altnet.rippletest.net:51233");
+
+			const fetchBalance = async () => {
+				await client.connect();
+
+				const response = await client.request({
+					command: "account_info",
+					account: recipientAddress,
+					ledger_index: "validated",
+				});
+
+				const drops = response.result.account_data.Balance;
+				console.log("checking xrpl", drops);
+				setXrpBalance(Number(drops) / 10 ** 6);
+
+				await client.disconnect();
+			};
+
+			fetchBalance();
 		} else {
 			setValid(false);
 		}
 	}, [recipientAddress]);
+
 	return (
 		<div
 			className="w-full max-w-lg mx-auto p-6 rounded-2xl shadow-2xl glass-card"
@@ -374,7 +413,8 @@ export default function BridgeInterface() {
 					</div>
 					<div className="flex flex-col items-center gap-3">
 						<div className="px-3 py-1 bg-[rgba(255,255,255,0.02)] rounded-full text-xs text-slate-300">
-							Balance: <span className="font-medium text-white">{balance}</span>
+							Balance:{" "}
+							<span className="font-medium text-white">{balance} USDC</span>
 						</div>
 						<div className="flex items-center gap-1 text-emerald-400 text-xs">
 							<Check className="w-4 h-4" />
@@ -424,8 +464,10 @@ export default function BridgeInterface() {
 				</div>
 
 				<div className="p-5 bg-slate-800/70 rounded-xl border border-slate-700">
-					<label className="block text-sm font-medium text-slate-300 mb-3">
-						To
+					<label className="text-sm font-medium text-slate-300 mb-3 flex justify-between">
+						<div>To</div>
+						<div>Balance: {xrpBalance} XRP</div>
+						{/* To */}
 					</label>
 					<NetworkSelector
 						selectedNetwork={destinationChain}
@@ -545,6 +587,15 @@ export default function BridgeInterface() {
 					Please connect your wallet to start bridging
 				</p>
 			)}
+			<TransferSuccessModal
+				isOpen={txnModal}
+				onClose={() => setTxnModal(false)}
+				fromAddress={address || ""}
+				toAddress={toAdd}
+				amountSent={fromAmt}
+				amountReceived={fillAmt}
+				hash={xrpHash}
+			/>
 		</div>
 	);
 }
