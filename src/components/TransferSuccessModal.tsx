@@ -151,7 +151,7 @@ export default function TransferSuccessModal({
 							"_blank"
 						)
 					}
-					className="mt-6 w-full rounded-lg bg-indigo-600 py-2.5 text-white font-medium hover:bg-indigo-500 transition"
+					className="mt-6 w-full rounded-lg bg-orange-500 hover:bg-orange-600 py-2.5 text-white font-medium transition"
 				>
 					View Transaction
 				</button>

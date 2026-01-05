@@ -383,12 +383,16 @@ export default function BridgeInterface() {
 		>
 			<div className="mb-4 flex items-center justify-between">
 				<div className="flex items-center gap-3">
-					{/* <div className="w-10 h-10 rounded-lg bg-emerald-600/20 flex items-center justify-center ring-1 ring-emerald-500/20">
-						<Zap className="w-5 h-5 text-emerald-400" />
-					</div> */}
+					{/* <div className="w-10 h-10 rounded-lg bg-emerald-600/20 flex items-center justify-center ring-1 ring-emerald-500/20"> */}
+					{/* <Zap className="w-5 h-5 text-emerald-400" /> */}
+					<img
+						src="https://cdn.prod.website-files.com/68da869991640cb4d53e986a/6916e394a215fb6974e32c5b_BXNK-logo-final2.svg"
+						width={80}
+					/>
+					{/* </div> */}
 					<div>
-						<h1 className="text-2xl font-bold text-white">BXNK protocol</h1>
-						<p className="text-xs text-slate-400">Fast • Secure • Low-cost</p>
+						<h1 className="text-2xl font-bold text-white">Protocol</h1>
+						{/* <p className="text-xs text-slate-400">Fast • Secure • Low-cost</p> */}
 					</div>
 				</div>
 				<OrangeWalletButton />
