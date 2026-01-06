@@ -38,7 +38,7 @@ import { Network } from "../types/bridge";
 
 export const SUPPORTED_NETWORKS: Network[] = [
 	{
-		id: 80002,
+		id: 137,
 		name: "Polygon",
 		symbol: "",
 		icon: "https://raw.githubusercontent.com/0xsquid/assets/main/images/webp128/chains/polygon.webp",
