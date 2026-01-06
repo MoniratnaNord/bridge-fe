@@ -18,7 +18,7 @@ import {
 	formatUnits,
 	http,
 } from "viem";
-import { polygonAmoy } from "viem/chains";
+import { polygon, polygonAmoy } from "viem/chains";
 import useGetTransaction from "../hooks/useGetTransaction";
 import TxnHashLink from "./TxnHashLink";
 import { toast } from "react-toastify";
@@ -58,7 +58,7 @@ export default function BridgeInterface() {
 	const [orderHash, setOrderHash] = useState<string>("");
 	const [orderId, setOrderId] = useState("");
 	const publicWallet = createPublicClient({
-		chain: polygonAmoy,
+		chain: polygon,
 		transport: http(),
 	});
 	useEffect(() => {
@@ -366,7 +366,6 @@ export default function BridgeInterface() {
 				});
 
 				const drops = response.result.account_data.Balance;
-				console.log("checking xrpl", drops);
 				setXrpBalance(Number(drops) / 10 ** 6);
 
 				await client.disconnect();
