@@ -49,7 +49,7 @@ export const SUPPORTED_NETWORKS: Network[] = [
 				name: "USD Coin",
 				icon: "https://raw.githubusercontent.com/0xsquid/assets/main/images/migration/webp/42161_0xaf88d065e77c8cc2239327c5edb3a432268e5831.webp",
 				decimals: 6,
-				address: "0x41e94eb019c0762f9bfcf9fb1e58725bfb0e7582",
+				address: import.meta.env.VITE_ERC_CONTRACT_ADDRESS,
 			},
 		],
 	},

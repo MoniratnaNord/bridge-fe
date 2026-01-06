@@ -24,9 +24,7 @@ export default function AmountInput({
 					Amount
 				</label>
 				<div className="flex items-center gap-2">
-					<span className="text-xs text-slate-400">
-						Balance: {balance} USDC
-					</span>
+					<span className="text-sm text-white">Balance: {balance} USDC</span>
 					<button
 						onClick={handleMaxClick}
 						disabled={disabled || parseFloat(balance) === 0}
