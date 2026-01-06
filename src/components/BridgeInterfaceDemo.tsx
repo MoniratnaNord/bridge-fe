@@ -376,6 +376,33 @@ export default function BridgeInterface() {
 			setValid(false);
 		}
 	}, [receiverAddress]);
+	useEffect(() => {
+		const isValid = isValidXrplAddress(import.meta.env.VITE_RECEIVER_ADDRESS);
+		if (isValid) {
+			setValid(true);
+			const client = new Client(import.meta.env.VITE_XRPL_WSS);
+
+			const fetchBalanceXrp = async () => {
+				await client.connect();
+
+				const response = await client.request({
+					command: "account_info",
+					account: import.meta.env.VITE_RECEIVER_ADDRESS,
+					ledger_index: "validated",
+				});
+
+				const drops = response.result.account_data.Balance;
+				setXrpBalance(Number(drops) / 10 ** 6);
+
+				await client.disconnect();
+			};
+
+			fetchBalanceXrp();
+			fetchBalance();
+		} else {
+			setValid(false);
+		}
+	}, [txnModal]);
 	const { mutate } = useSendTxn();
 	return (
 		<div
@@ -451,7 +478,7 @@ export default function BridgeInterface() {
 						<div className="grid grid-cols-2 gap-2">
 							<div>
 								<label className="text-sm font-medium text-slate-300 mb-3">
-									<div>Sender Address</div>
+									<div className="mb-3">Sender Address</div>
 
 									{/* To */}
 								</label>
@@ -469,7 +496,7 @@ export default function BridgeInterface() {
 							</div>
 							<div>
 								<label className="text-sm font-medium text-slate-300 mb-3">
-									<div>Balance</div>
+									<div className="mb-3">Balance</div>
 
 									{/* To */}
 								</label>
@@ -553,7 +580,7 @@ export default function BridgeInterface() {
 						<div className="grid grid-cols-2 gap-2">
 							<div>
 								<label className="text-sm font-medium text-slate-300 mb-3">
-									<div>Recipient Address</div>
+									<div className="mb-3">Recipient Address</div>
 
 									{/* To */}
 								</label>
@@ -571,7 +598,7 @@ export default function BridgeInterface() {
 							</div>
 							<div>
 								<label className="text-sm font-medium text-slate-300 mb-3">
-									<div>Balance</div>
+									<div className="mb-3">Balance</div>
 
 									{/* To */}
 								</label>
