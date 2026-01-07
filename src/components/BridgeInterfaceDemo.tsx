@@ -65,6 +65,7 @@ export default function BridgeInterface() {
 		(async () => await fetchBalance())();
 	}, [isConnected, walletProvider, sourceToken]);
 	useEffect(() => {
+		console.log("Test mainnet");
 		const options = {
 			method: "GET",
 			headers: { "x-cg-demo-api-key": "CG-zYfpQFy8sDhbM9w4cGTwTjXq" },
