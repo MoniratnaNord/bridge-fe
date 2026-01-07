@@ -49,7 +49,7 @@ export default function BridgeInterface() {
 	const [destinationToken, setDestinationToken] = useState<Token>(
 		SUPPORTED_NETWORKS[1].tokens[0]
 	);
-	const [amount, setAmount] = useState("5");
+	const [amount, setAmount] = useState("0.1");
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [balance, setBalance] = useState("0");
 	const [isLoading, setIsLoading] = useState(false);
@@ -141,6 +141,7 @@ export default function BridgeInterface() {
 		if (!isConnected || !walletProvider || !amount) {
 			toast("Please connect your wallet and enter an amount", {
 				type: "warning",
+				autoClose: 5000,
 			});
 			return;
 		}
@@ -198,12 +199,16 @@ export default function BridgeInterface() {
 		if (transactionData.overallStatus === "failed") {
 			setIsLoading(false);
 			console.error("Transaction failed", transactionData);
-			toast("Transaction Failed. Please try again.", { type: "error" });
+			toast("Transaction Failed. Please try again.", {
+				type: "error",
+				autoClose: 5000,
+			});
 		}
 		if (transactionData.status === "refunded") {
 			setIsLoading(false);
 			toast("Transaction Failed. A refund has been initiated.", {
 				type: "error",
+				autoClose: 5000,
 			});
 		}
 	}, [transactionData]);
@@ -301,7 +306,7 @@ export default function BridgeInterface() {
 			setPolygonHash(transactionData.polygonTxHash);
 
 			toast(
-				<div className="space-y-1 bg-[#0E172A]">
+				<div className="space-y-1">
 					<p className="text-sm text-slate-300">Polygon Transaction Hash:</p>
 					<TxnHashLink
 						hash={transactionData.polygonTxHash}
@@ -310,7 +315,6 @@ export default function BridgeInterface() {
 				</div>,
 				{
 					toastId: `polygon-${transactionData.polygonTxHash}`, // ✅ prevents duplicates
-					className: "bg-[#0E172A] border border-slate-700",
 				}
 			);
 		}
@@ -343,6 +347,7 @@ export default function BridgeInterface() {
 			setIsLoading(false);
 			toast.error("Transaction Failed. Please try again.", {
 				toastId: "txn-failed",
+				autoClose: 5000,
 			});
 		}
 	}, [transactionData]);

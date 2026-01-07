@@ -14,14 +14,6 @@ function App() {
 					autoClose={false}
 					newestOnTop={false}
 					closeOnClick
-					closeButton={({ closeToast }) => (
-						<button
-							onClick={closeToast}
-							className="absolute top-3 right-3 text-white hover:text-slate-300 transition"
-						>
-							✕
-						</button>
-					)}
 					rtl={false}
 					pauseOnFocusLoss
 					draggable
