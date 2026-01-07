@@ -21,6 +21,10 @@ export default function TransferSuccessModal({
 	xrpHash,
 	polHash,
 }: TransferSuccessModalProps) {
+	const truncateHash = (hash: string, start = 6, end = 4) => {
+		if (!hash) return "";
+		return `${hash.slice(0, start)}...${hash.slice(-end)}`;
+	};
 	if (!isOpen) return null;
 
 	return (
@@ -55,14 +59,14 @@ export default function TransferSuccessModal({
 					<div className="flex justify-between">
 						<span className="text-slate-400">From</span>
 						<span className="text-white truncate max-w-[200px]">
-							{fromAddress}
+							{truncateHash(fromAddress)}
 						</span>
 					</div>
 
 					<div className="flex justify-between">
 						<span className="text-slate-400">To</span>
 						<span className="text-white truncate max-w-[200px]">
-							{toAddress}
+							{truncateHash(toAddress)}
 						</span>
 					</div>
 
