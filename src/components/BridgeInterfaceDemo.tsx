@@ -709,11 +709,11 @@ export default function BridgeInterface() {
                     }
                 )} */}
 
-			{!isConnected && (
+			{/* {!isConnected && (
 				<p className="mt-4 text-center text-sm text-slate-400">
 					Please connect your wallet to start bridging
 				</p>
-			)}
+			)} */}
 			<TransferSuccessModal
 				isOpen={txnModal}
 				onClose={() => setTxnModal(false)}
