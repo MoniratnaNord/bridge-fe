@@ -191,8 +191,11 @@ export default function BridgeInterface() {
 		if (transactionData.transactionHash) {
 			setPolygonHash(transactionData.polygonTxHash);
 		}
+		let popupTimer: NodeJS.Timeout | null = null;
 		if (transactionData.overallStatus === "processing") {
-			setTxnModal(true);
+			popupTimer = setTimeout(() => {
+				setTxnModal(true); // 👈 popup opens after 7 seconds
+			}, 7000);
 			setXrpHash(transactionData.xrpTxHash);
 			setFillAmt(Number(transactionData.xrpAmount));
 			setFromAmt(Number(transactionData.usdcAmount));
@@ -219,6 +222,9 @@ export default function BridgeInterface() {
 				autoClose: 5000,
 			});
 		}
+		return () => {
+			if (popupTimer) clearTimeout(popupTimer);
+		};
 	}, [transactionData]);
 	const handleBridge = async () => {
 		const userWallet = createWalletClient({
