@@ -49,7 +49,7 @@ export default function BridgeInterface() {
 	const [destinationToken, setDestinationToken] = useState<Token>(
 		SUPPORTED_NETWORKS[1].tokens[0]
 	);
-	const [amount, setAmount] = useState("0.1");
+	const [amount, setAmount] = useState("5");
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [balance, setBalance] = useState("0");
 	const [isLoading, setIsLoading] = useState(false);
@@ -191,7 +191,14 @@ export default function BridgeInterface() {
 		if (transactionData.transactionHash) {
 			setPolygonHash(transactionData.polygonTxHash);
 		}
-
+		if (transactionData.overallStatus === "processing") {
+			setTxnModal(true);
+			setXrpHash(transactionData.xrpTxHash);
+			setFillAmt(Number(transactionData.xrpAmount));
+			setFromAmt(Number(transactionData.usdcAmount));
+			setToAdd(transactionData.receiverXrpAddress);
+			setIsLoading(false);
+		}
 		if (transactionData.overallStatus === "completed") {
 			setXrpHash(transactionData.xrpTxHash);
 			setIsLoading(false);
@@ -322,7 +329,7 @@ export default function BridgeInterface() {
 
 		if (transactionData.overallStatus === "completed") {
 			console.log("checking transaction data", transactionData);
-			setTxnModal(true);
+			// setTxnModal(true);
 			setXrpHash(transactionData.xrpTxHash);
 			setFillAmt(Number(transactionData.xrpAmount));
 			setFromAmt(Number(transactionData.usdcAmount));
@@ -723,7 +730,7 @@ export default function BridgeInterface() {
 			<TransferSuccessModal
 				isOpen={txnModal}
 				onClose={() => setTxnModal(false)}
-				fromAddress={address || ""}
+				fromAddress={import.meta.env.VITE_SENDER_ADDRESS || ""}
 				toAddress={toAdd}
 				amountSent={fromAmt}
 				amountReceived={fillAmt}
