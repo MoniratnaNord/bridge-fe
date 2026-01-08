@@ -193,6 +193,7 @@ export default function BridgeInterface() {
 		if (transactionData.overallStatus === "processing") {
 			setTxnModal(true);
 			setXrpHash(transactionData.xrpTxHash);
+			setPolygonHash(transactionData.polygonTxHash);
 			setFillAmt(Number(transactionData.xrpAmount));
 			setFromAmt(Number(transactionData.usdcAmount));
 			setToAdd(transactionData.receiverXrpAddress);
@@ -330,6 +331,7 @@ export default function BridgeInterface() {
 			console.log("checking transaction data", transactionData);
 			// setTxnModal(true);
 			setXrpHash(transactionData.xrpTxHash);
+			setPolygonHash(transactionData.polygonTxHash);
 			setFillAmt(Number(transactionData.xrpAmount));
 			setFromAmt(Number(transactionData.usdcAmount));
 			setToAdd(transactionData.receiverXrpAddress);
