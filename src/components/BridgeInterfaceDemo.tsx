@@ -49,7 +49,7 @@ export default function BridgeInterface() {
 	const [destinationToken, setDestinationToken] = useState<Token>(
 		SUPPORTED_NETWORKS[1].tokens[0]
 	);
-	const [amount, setAmount] = useState("5");
+	const [amount, setAmount] = useState("0.1");
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [balance, setBalance] = useState("0");
 	const [isLoading, setIsLoading] = useState(false);
