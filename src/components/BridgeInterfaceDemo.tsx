@@ -18,7 +18,7 @@ import {
 	formatUnits,
 	http,
 } from "viem";
-import { polygon, polygonAmoy } from "viem/chains";
+import { arbitrum, polygon, polygonAmoy } from "viem/chains";
 import useGetTransaction from "../hooks/useGetTransaction";
 import TxnHashLink from "./TxnHashLink";
 import { toast } from "react-toastify";
@@ -49,7 +49,7 @@ export default function BridgeInterface() {
 	const [destinationToken, setDestinationToken] = useState<Token>(
 		SUPPORTED_NETWORKS[1].tokens[0]
 	);
-	const [amount, setAmount] = useState("5");
+	const [amount, setAmount] = useState("0.1");
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [balance, setBalance] = useState("0");
 	const [isLoading, setIsLoading] = useState(false);
@@ -58,7 +58,7 @@ export default function BridgeInterface() {
 	const [orderHash, setOrderHash] = useState<string>("");
 	const [orderId, setOrderId] = useState("");
 	const publicWallet = createPublicClient({
-		chain: polygon,
+		chain: import.meta.env.VITE_CHAIN_NAME === "Polygon" ? polygon : arbitrum,
 		transport: http(),
 	});
 	useEffect(() => {

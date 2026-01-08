@@ -38,10 +38,10 @@ import { Network } from "../types/bridge";
 
 export const SUPPORTED_NETWORKS: Network[] = [
 	{
-		id: 137,
-		name: "Polygon",
+		id: import.meta.env.VITE_CHAIN_ID,
+		name: import.meta.env.VITE_CHAIN_NAME,
 		symbol: "",
-		icon: "https://raw.githubusercontent.com/0xsquid/assets/main/images/webp128/chains/polygon.webp",
+		icon: import.meta.env.VITE_CHAIN_ICON,
 		tokens: [
 			{
 				id: "usdc",

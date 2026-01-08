@@ -79,7 +79,7 @@ export default function TransferSuccessModal({
 							{Number(amountReceived).toFixed(2)} XRP
 						</span>
 					</div>
-					<div className="flex justify-between">
+					{/* <div className="flex justify-between">
 						<span className="text-slate-400">Polygon Transaction Hash</span>
 						<span
 							className="text-[#FA7315] hover:cursor-pointer hover:underline truncate max-w-[200px]"
@@ -92,9 +92,9 @@ export default function TransferSuccessModal({
 						>
 							{polHash}
 						</span>
-					</div>
+					</div> */}
 
-					<div className="flex justify-between">
+					{/* <div className="flex justify-between">
 						<span className="text-slate-400">XRP Transaction Hash</span>
 						<span
 							className="text-[#FA7315] hover:cursor-pointer hover:underline truncate max-w-[200px]"
@@ -107,7 +107,7 @@ export default function TransferSuccessModal({
 						>
 							{xrpHash}
 						</span>
-					</div>
+					</div> */}
 				</div>
 
 				{/* Action */}
@@ -121,7 +121,9 @@ export default function TransferSuccessModal({
 						}
 						className="mt-6 w-full rounded-lg bg-orange-500 hover:bg-orange-600 py-2.5 text-white font-medium transition"
 					>
-						View on Polygon Scan
+						{import.meta.env.VITE_CHAIN_NAME === "Polygon"
+							? "View on Polygon Scan"
+							: "View on Arbitrum Scan"}
 					</button>
 					<button
 						onClick={() =>
