@@ -33,7 +33,7 @@ export default function BridgeInterface() {
 	const { address, isConnected } = useAppKitAccount();
 	const { walletProvider } = useAppKitProvider("eip155");
 	const [sourceChain, setSourceChain] = useState<Network>(
-		SUPPORTED_NETWORKS[0]
+		SUPPORTED_NETWORKS[0],
 	);
 	// const { writeAsync: createOrder } = useContractWrite({
 	// 	address: BRIDGE_CONTRACT_ADDRESS,
@@ -41,13 +41,13 @@ export default function BridgeInterface() {
 	// 	functionName: "createOrder",
 	// });
 	const [sourceToken, setSourceToken] = useState<Token>(
-		SUPPORTED_NETWORKS[0].tokens[0]
+		SUPPORTED_NETWORKS[0].tokens[0],
 	);
 	const [destinationChain, setDestinationChain] = useState<Network>(
-		SUPPORTED_NETWORKS[1]
+		SUPPORTED_NETWORKS[1],
 	);
 	const [destinationToken, setDestinationToken] = useState<Token>(
-		SUPPORTED_NETWORKS[1].tokens[0]
+		SUPPORTED_NETWORKS[1].tokens[0],
 	);
 	const [amount, setAmount] = useState("5");
 	const [recipientAddress, setRecipientAddress] = useState("");
@@ -72,7 +72,7 @@ export default function BridgeInterface() {
 
 		fetch(
 			"https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ripple",
-			options
+			options,
 		)
 			.then((res) => res.json())
 			.then((res) => {
@@ -128,7 +128,7 @@ export default function BridgeInterface() {
 		});
 		console.log(
 			"checking Allowance:",
-			Number(BigInt(allowance as bigint)) / 10 ** sourceToken.decimals
+			Number(BigInt(allowance as bigint)) / 10 ** sourceToken.decimals,
 		);
 		setAllowance(allowance as bigint);
 	};
@@ -230,7 +230,7 @@ export default function BridgeInterface() {
 		if (!isConnected || !walletProvider || !amount || !recipientAddress) {
 			toast(
 				"Please connect your wallet, enter an amount, and recipient address",
-				{ type: "warning" }
+				{ type: "warning" },
 			);
 			return;
 		}
@@ -318,12 +318,12 @@ export default function BridgeInterface() {
 					<p className="text-sm text-slate-300">Polygon Transaction Hash:</p>
 					<TxnHashLink
 						hash={transactionData.polygonTxHash}
-						explorerUrl="https://amoy.polygonscan.com/tx"
+						explorerUrl="https://polygonscan.com/tx"
 					/>
 				</div>,
 				{
 					toastId: `polygon-${transactionData.polygonTxHash}`, // ✅ prevents duplicates
-				}
+				},
 			);
 		}
 
@@ -500,7 +500,7 @@ export default function BridgeInterface() {
 									type="text"
 									value={`${import.meta.env.VITE_SENDER_ADDRESS.slice(
 										0,
-										6
+										6,
 									)}...${import.meta.env.VITE_SENDER_ADDRESS.slice(-4)}`}
 									// onChange={(e) => setRecipientAddress(e.target.value)}
 									placeholder="0x..."
@@ -602,7 +602,7 @@ export default function BridgeInterface() {
 									type="text"
 									value={`${import.meta.env.VITE_RECEIVER_ADDRESS.slice(
 										0,
-										6
+										6,
 									)}...${import.meta.env.VITE_RECEIVER_ADDRESS.slice(-4)}`}
 									// onChange={(e) => setRecipientAddress(e.target.value)}
 									placeholder="0x..."
@@ -645,7 +645,7 @@ export default function BridgeInterface() {
 									onError: (error: any) => {
 										console.log(error);
 									},
-								}
+								},
 							);
 						}
 						// BigInt(allowance as bigint) <
