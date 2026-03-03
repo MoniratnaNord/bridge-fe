@@ -59,7 +59,8 @@ export default function BridgeInterface() {
 	const [orderId, setOrderId] = useState("");
 	const publicWallet = createPublicClient({
 		chain: polygon,
-		transport: http(),
+		transport: http(import.meta.env.VITE_POLYGON_RPC),
+		// rpc: ['http://polygon-mainnet.infura.io'],
 	});
 	useEffect(() => {
 		(async () => await fetchBalance())();
@@ -105,7 +106,7 @@ export default function BridgeInterface() {
 					functionName: "decimals",
 				}),
 			]);
-			console.log("raw", rawBalance, decimals);
+			console.log("raw balance", rawBalance, decimals);
 			const balanceEth = formatUnits(rawBalance as bigint, decimals as number);
 			setBalance(balanceEth);
 		} catch (error) {
