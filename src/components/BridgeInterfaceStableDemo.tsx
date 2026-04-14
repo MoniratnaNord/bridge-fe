@@ -27,10 +27,10 @@ export default function BridgeInterfaceStable() {
 		SUPPORTED_NETWORKS[2].tokens[0],
 	);
 	const [destinationChain, setDestinationChain] = useState<Network>(
-		SUPPORTED_NETWORKS[2],
+		SUPPORTED_NETWORKS[3],
 	);
 	const [destinationToken, setDestinationToken] = useState<Token>(
-		SUPPORTED_NETWORKS[2].tokens[1],
+		SUPPORTED_NETWORKS[3].tokens[1],
 	);
 	const [amount, setAmount] = useState(
 		`${import.meta.env.VITE_DEFAULT_AMOUNT}`,
