@@ -49,7 +49,7 @@ export default function BridgeInterface() {
 	const [destinationToken, setDestinationToken] = useState<Token>(
 		SUPPORTED_NETWORKS[1].tokens[0],
 	);
-	const [amount, setAmount] = useState("5");
+	const [amount, setAmount] = useState("0.1");
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [balance, setBalance] = useState("0");
 	const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +66,7 @@ export default function BridgeInterface() {
 		(async () => await fetchBalance())();
 	}, [isConnected, walletProvider, sourceToken]);
 	useEffect(() => {
+		console.log("Test mainnet");
 		const options = {
 			method: "GET",
 			headers: { "x-cg-demo-api-key": "CG-zYfpQFy8sDhbM9w4cGTwTjXq" },
@@ -191,8 +192,11 @@ export default function BridgeInterface() {
 		if (transactionData.transactionHash) {
 			setPolygonHash(transactionData.polygonTxHash);
 		}
+		let popupTimer: NodeJS.Timeout | null = null;
 		if (transactionData.overallStatus === "processing") {
-			setTxnModal(true);
+			popupTimer = setTimeout(() => {
+				setTxnModal(true); // 👈 popup opens after 7 seconds
+			}, 7000);
 			setXrpHash(transactionData.xrpTxHash);
 			setPolygonHash(transactionData.polygonTxHash);
 			setFillAmt(Number(transactionData.xrpAmount));
@@ -220,6 +224,9 @@ export default function BridgeInterface() {
 				autoClose: 5000,
 			});
 		}
+		return () => {
+			if (popupTimer) clearTimeout(popupTimer);
+		};
 	}, [transactionData]);
 	const handleBridge = async () => {
 		const userWallet = createWalletClient({
