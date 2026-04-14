@@ -50,7 +50,7 @@ export default function BridgeInterface() {
 		SUPPORTED_NETWORKS[1].tokens[0],
 	);
 	const [amount, setAmount] = useState(
-		`${import.meta.env.VITE_DEFAULT_AMOUNT}`,
+		`${import.meta.env.VITE_XRP_CONVERT_AMOUNT}`,
 	);
 	const [recipientAddress, setRecipientAddress] = useState("");
 	const [balance, setBalance] = useState("0");
