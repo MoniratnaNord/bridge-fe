@@ -403,7 +403,7 @@ export default function BridgeInterfaceStable() {
 							Processing...
 						</>
 					) : (
-						`Send ${amount} USDC`
+						`Transfer ${amount} USDC`
 					)}
 				</button>
 			</div>
